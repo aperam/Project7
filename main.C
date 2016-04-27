@@ -1,7 +1,9 @@
 /**
  Ryan Morvay - morvayr@email.sc.edu
  Joseph Bloxham - bloxhamj@email.sc.edu
+ Ian Osea - osea@email.sc.edu
  Project 7
+ CSCE 240 
  April 27, 2016
 */
 
@@ -22,12 +24,10 @@ class Customer
     public:
       Customer() : serviceTime(0) {}
       Customer(int tm) : serviceTime(tm) {}
-      int getTime() { return serviceTime; }
-      void setTime(int newtime) { serviceTime = newtime; }
+      int getTime() {return serviceTime;}
+      void setTime(int newtime) {serviceTime = newtime;}
     
-    friend ostream&
-    
-    operator<<(ostream& os, const Customer& c)
+    friend ostream& operator<<(ostream& os, const Customer& c)
     {
        return os << '[' << c.serviceTime << ']';
     }
@@ -35,130 +35,159 @@ class Customer
  
 class Teller
 {
+  //creating the queue to hold the customers
   queue<Customer>& customers;
+  //creating new customer object
   Customer current;
-  enum { SLICE = 5 };
-  int ttime; // Time left in slice
-  bool busy; // Is teller serving a customer?
+  //setting time slots for tellers
+  enum {SEGMENT = 5};
+  //Remaining time in each segment 
+  int remainingTime;
+  //boolean representing if a teller is busy with a customer
+  bool busy;
 
   public:
-    Teller(queue<Customer>& cq) : customers(cq), ttime(0), busy(false) {}
-       Teller& operator=(const Teller& rv)
-       {
-         customers = rv.customers;
-         current = rv.current;
-         ttime = rv.ttime;
-         busy = rv.busy;
-         return *this;
-        }
+    Teller(queue<Customer>& customerQueue) : customers(customerQueue), remainingTime(0), busy(false) {}
+       
+    Teller& operator=(const Teller& rv)
+    {
+      customers = rv.customers;
+      current = rv.current;
+      remainingTime = rv.remainingTime;
+      busy = rv.busy;
+      return *this;
+    }
 
     bool isBusy()
     { 
       return busy;
     }
-    
-    void run(bool recursion = false)
+
+    void helpCustomers(bool recursion = false)
     {
       if(!recursion)
       {
-        ttime = SLICE;
+        remainingTime = SEGMENT;
       }  
         
-      int servtime = current.getTime();
+      int timeServed = current.getTime();
 
-      if(servtime > ttime)
+      if(timeServed > remainingTime)
       {
-        servtime -= ttime;
-        current.setTime(servtime);
-        busy = true; // Still working on current
+        timeServed -= remainingTime;
+        current.setTime(timeServed);
+        //Continue working on current
+        busy = true;
         return;
       }
 
-      if(servtime < ttime)
+      if(timeServed < remainingTime)
       {
-        ttime -= servtime;
+        remainingTime -= timeServed;
    
         if(!customers.empty())
         {
           current = customers.front();
-          customers.pop(); // Remove it
+          cout << "Removing customer\n"; 
+          customers.pop(); 
           busy = true;
-          run(true); // Recurse
+          helpCustomers(true); // Recurse
         }
         
         return;
       }
 
-      if(servtime == ttime)
+      if(timeServed == remainingTime)
       {
-        // Done with current, set to empty:
+        //Done with current customers
+        //set to empty
         current = Customer(0);
         busy = false;
-        return; // No more time in this slice
+        
+        //no more time left
+        return;
       }
     }
 };
  
-// Inherit to access protected implementation:
-class CustomerQ : public queue<Customer>
+//Inherit to access protected implementation:
+class customerQueue : public queue<Customer>
 {
   public:
-   friend ostream&
-   operator<<(ostream& os, const CustomerQ& cd)
+   friend ostream& operator<<(ostream& outStream, const customerQueue& custQueue)
    {
-     copy(cd.c.begin(), cd.c.end(),
-     ostream_iterator<Customer>(os, ""));
-     return os;
+     copy(custQueue.c.begin(), custQueue.c.end(),
+     ostream_iterator<Customer>(outStream, " "));
+     return outStream;
    }
+};
+
+class bank
+{
+  public:
+  	int goodTellers, badTellers;
+  	int managers;
+
+  	bool isBusy;
+  	bool bankState; 
 };
  
 int main()
 {
-  CustomerQ customers;
-  list<Teller> tellers;
-  typedef list<Teller>::iterator TellIt;
+  //create new customers object	
+  customerQueue customers;
   
+  //create tellers list
+  list<Teller> tellers;
+
+  //Creating iterator for tellers
+  typedef list<Teller>::iterator tellersIter;
+  
+  //adds the customers to the teller queue
   tellers.push_back(Teller(customers));
   
   //random number generator
   srand(time(0));
   
+  //account for run time
   clock_t ticks = clock();
 
-  cout << "Starting Banking Simulation..." << endl;
+  cout << "Starting Bank Simulation..." << endl;
   
   //Run simulation for at least 5 seconds:
   while(clock() < ticks + 5 * CLOCKS_PER_SEC)
   {
-    // Add a random number of customers to the
-    // queue, with random service times:
+    //Add a random number of customers to the
+    //queue, with random service times:
     for(int i = 0; i < rand() % 5; i++)
     {	
       customers.push(Customer(rand() % 15 + 1));
-      cout << '{' << tellers.size() << '}' << customers << endl;
+      cout << "Teller: " << tellers.size() << " Customers: " << customers << endl;
     }
 
-    // Have the tellers service the queue:
-    for(TellIt i = tellers.begin(); i != tellers.end(); i++)
+    //Have the tellers service the queue:
+    for(tellersIter i = tellers.begin(); i != tellers.end(); i++)
     {
-      (*i).run();
+      (*i).helpCustomers();
     }
 
-    cout << '{' << tellers.size() << '}' << customers << endl;
+    cout << "Teller: " << tellers.size() << " Customers: " << customers << endl;
 
     //If line is too long, add another teller:
     if(customers.size() / tellers.size() > 2)
     {
+       cout << "Line is too long, adding another teller...\n";
        tellers.push_back(Teller(customers));
     }  
 
     //If line is short enough, remove a teller:
     if(tellers.size() > 1 && customers.size() / tellers.size() < 2)
     {
-      for(TellIt i = tellers.begin(); i != tellers.end(); i++)
+      for(tellersIter i = tellers.begin(); i != tellers.end(); i++)
       {
         if(!(*i).isBusy())
         {
+          cout << "The lines are short, so a teller is removed\n";
           tellers.erase(i);
           //Break the for loop
           break;
@@ -166,23 +195,7 @@ int main()
       }  
     }
   }
+  cout << "\nEnd of simulation...Goodbye\n";
 }  
 
-/**
-class bank(int b, int g, int m, priority_queue<Item*, vector<Item*>, compareItem >* pq)
-{ 
-  //b = bad teller
-  //g = good teller
-  //m = manager
-  bool bankStatus = false;
-
-  if (bankStatus == true)
-  {
-
-
-  }	
-
-  q = pq;
-  q->push(this);
-  */
 
