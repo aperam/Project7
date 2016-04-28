@@ -13,6 +13,7 @@
 #include <list>
 #include <queue>
 #include <vector>
+#include <fstream>
 #include <stdlib.h>
 #include "main.h"
 
@@ -167,6 +168,9 @@ class customerQueue : public queue<Customer>
  
 int main()
 {
+  //
+  ofstream outFile("bankReport.txt");
+ 
   //create new customers object	
   customerQueue customers;
   
@@ -185,7 +189,10 @@ int main()
   //keeping track of run time
   clock_t ticks = clock();
 
+  outFile << "Bank Report\n" << endl;
+
   cout << "Starting Bank Simulation..." << endl;
+  outFile << "Starting Bank Simulation..." << endl;
   
   //Run simulation for at least 5 seconds:
   while(clock() < ticks + 5 * CLOCKS_PER_SEC)
@@ -196,6 +203,7 @@ int main()
     {	
       customers.push(Customer(rand() % 15 + 1));
       cout << "Teller: " << tellers.size() << " Customers: " << customers << endl;
+      outFile << "Teller: " << tellers.size() << " Customers: " << customers << endl;
     }
 
     //Have the tellers service the queue:
@@ -205,11 +213,13 @@ int main()
     }
 
     cout << "Teller: " << tellers.size() << " Customers: " << customers << endl;
+    outFile << "Teller: " << tellers.size() << " Customers: " << customers << endl;
 
     //If line is too long, add another teller:
     if(customers.size() / tellers.size() > 2)
     {
        cout << "Line is too long, adding another teller...\n";
+       outFile << "Line is too long, adding another teller...\n";
        tellers.push_back(Teller(customers));
     }  
 
@@ -221,6 +231,7 @@ int main()
         if(!(*i).isBusy())
         {
           cout << "The lines are short, so a teller is removed\n";
+          outFile << "The lines are short, so a teller is removed\n";
           tellers.erase(i);
           //Break the for loop
           break;
@@ -229,6 +240,7 @@ int main()
     }
   }
   cout << "\nEnd of simulation...Goodbye\n";
+  outFile << "\nEnd of simulation...Goodbye\n";
 }  
 
 
