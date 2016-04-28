@@ -144,42 +144,53 @@ class Teller
         remainingTime = SEGMENT;
       }  
         
-      //  
+      //variable to get the amount of time the customer is served  
       int timeServed = current.getTime();
 
+      //checks if the current time is greater than the time remaining in the segment
       if(timeServed > remainingTime)
       {
+      	//Update the time served
         timeServed -= remainingTime;
+        //sets new current time to the time served
         current.setTime(timeServed);
         //Continue working on current
         busy = true;
+        //return nothing
         return;
       }
 
-      //
+      //checks to see if the time served is less than the remaining time
       if(timeServed < remainingTime)
       {
+      	//upates the remaining time
         remainingTime -= timeServed;
-   
+        
+        //checks if the customer queue is not empty
         if(!customers.empty())
         {
+          //gets the customer that is in the front of the queue using FIFO
           current = customers.front();
           cout << "Removing customer\n"; 
+          //removes customer from the queue
           customers.pop(); 
+          //updates the state
           busy = true;
-          helpCustomers(true); // Recurse
+          //call helpCustomers function to run again
+          helpCustomers(true);
         }
+        //return nothing
         return;
       }
 
+      //checks to see if the time served is equal to the time remaining
       if(timeServed == remainingTime)
       {
-        //Done with current customers
-        //set to empty
+        //Finished serving current customers
         current = Customer(0);
+        //updates status
         busy = false;
-        
-        //no more time left
+        //doesn't return anything since there is nothing left
         return;
       }
     }
@@ -265,7 +276,7 @@ int main()
   newDay.bankState();
   
   //Run simulation for at least 5 seconds:
-  while(clock() < ticks + 5 * CLOCKS_PER_SEC)
+  while(clock() < ticks + .05 * CLOCKS_PER_SEC)
   {
     //for loop to add customers to the queue
     for(int i = 0; i < rand() % 5; i++)
