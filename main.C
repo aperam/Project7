@@ -25,28 +25,32 @@ class Bank
   	int goodTellers, badTellers;
   	int managers;
   	double time;
-  	
-
-  	bool bankState;
+  
   	bool busy;
+  	bool open;
   	
   	
-  	if(time < 0)
+  	bool bankState()
+  	{
+  	 if (time < 0)
   	{
   	 cout<<"The bank is closed";
-  	 return FALSE;
+    open == FALSE;
+    return open;
   	}
-  	
-  	else if(time > 288000)
-  	{
-  	 cout<<"The bank is closed";
-  	 return FALSE;
-  	}
-   else
-   {
-    cout<<"The bank is open";
-    return TRUE;
-   }
+  	 else if( time > 288000)
+  	 {
+  	  cout<<"The bank is closed";
+  	  open == FALSE;
+  	  return open;
+  	 }
+  	 else
+  	 {
+  	  cout<<"The bank is open";
+  	  open == TRUE;
+  	  return open;
+  	 }
+  	}	
    
   	bool isBusy()
     { 
