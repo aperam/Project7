@@ -34,9 +34,9 @@ class Bank
   	{
   	 if (time < 0)
   	{
-  	 cout<<"The bank is closed";
-    open == FALSE;
-    return open;
+  	  cout<<"The bank is closed";
+     open == FALSE;
+     return open;
   	}
   	 else if( time > 288000)
   	 {
