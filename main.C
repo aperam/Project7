@@ -7,15 +7,6 @@
  April 27, 2016
 */
 
-/**
- Ryan Morvay - morvayr@email.sc.edu
- Joseph Bloxham - bloxhamj@email.sc.edu
- Ian Osea - osea@email.sc.edu
- Project 7
- CSCE 240 
- April 27, 2016
-*/
-
 #include <iostream>
 #include <ctime>
 #include <iterator>
@@ -32,34 +23,44 @@ using namespace std;
 class Bank
 {
   public:
+  	//initilize all variables used in this class
   	int goodTellers, badTellers, managers;
   	double time = 60;
   	bool busy = true;
   	bool open;
   	
+  	//boolean function for telling if the bank is open or closed
   	bool bankState()
   	{
+  	  //checks to see if the bank is open
   	  if (time < 0)
   	  {
   	    cout << "\nThe bank is closed\n";
+        //sets the bank status to closed which is false
         open == false;
+        //returns status
         return open;
   	  }
   	  else if( time > 28800)
   	  {
   	    cout << "\nThe bank is closed\n";
+  	    //sets the bank status to closed which is false
   	    open == false;
+  	    //returns status
   	    return open;
   	  }
   	  else
   	  {
   	    cout << "\nThe bank is now open for service.\n";
   	    cout << "\n";
+  	    //sets the bank status to open which is true
   	    open == true;
+  	    //returns status
   	    return open;
   	  }
   	}	
    
+    //function for telling whether the bank is busy or not
   	bool isBusy()
     { 
       return busy;
@@ -68,13 +69,20 @@ class Bank
 
 class Customer
 {
+  //variable to keep track of amount of time customers is being served
   int serviceTime;
     public:
+      //constructor for customer
       Customer() : serviceTime(0) {}
       Customer(int tm) : serviceTime(tm) {}
+      
+      //function to get the service time 
       int getTime() {return serviceTime;}
+      
+      //function to set the service time to a new time
       void setTime(int newtime) {serviceTime = newtime;}
     
+    //overloaded operator for formating customer queue
     friend ostream& operator<<(ostream& os, const Customer& c)
     {
        return os << '[' << c.serviceTime << ']';
@@ -95,8 +103,10 @@ class Teller
   bool busy;
 
   public:
+    //constructor for the teller class
     Teller(queue<Customer>& customerQueue) : customers(customerQueue), remainingTime(0), busy(false) {}
        
+    //overloaded operator for teller
     Teller& operator=(const Teller& temp)
     {
       customers = temp.customers;
@@ -106,18 +116,35 @@ class Teller
       return *this;
     }
 
+    //function for the good tellers
+    void goodTeller()
+    {
+      
+    }
+
+    //function for the bad tellers
+    void badTeller()
+    {
+
+    }
+
+    //function to see if the teller is busy or not
     bool isBusy()
     { 
       return busy;
     }
 
-    void helpCustomers(bool recursion = false)
+    //funtion to simulate tellers helping customers
+    void helpCustomers(bool customerCheck = false)
     {
-      if(!recursion)
+      //checks if time is left after being served
+      if(!customerCheck)
       {
+      	//sets the new time 
         remainingTime = SEGMENT;
       }  
         
+      //  
       int timeServed = current.getTime();
 
       if(timeServed > remainingTime)
@@ -129,6 +156,7 @@ class Teller
         return;
       }
 
+      //
       if(timeServed < remainingTime)
       {
         remainingTime -= timeServed;
@@ -161,8 +189,10 @@ class Teller
 class customerQueue : public queue<Customer>
 {
   public:
+   //overloaded operator for the output
    friend ostream& operator<<(ostream& outStream, const customerQueue& custQueue)
    {
+   	 //formats the customer queue and returns the output
      copy(custQueue.c.begin(), custQueue.c.end(), ostream_iterator<Customer>(outStream, " "));
      return outStream;
    }
@@ -171,18 +201,29 @@ class customerQueue : public queue<Customer>
 class manager
 {
   public:
+  	//two states for the manager
   	bool visit = false;
   	bool office = false;
 
+    //creates new bank object
     Bank startDay;
 
+    //run function to set the manager's state at the start of the business day
   	bool run()
   	{
+  	  //checks to see if the bank is open 	
       if(startDay.bankState() == true)
       {
+      	//sets the status of the manager to be in the office
         office == true;
         return office;
       }	
+      else
+      {
+      	//sets the status of the manager to be in the office
+      	office == false;
+      	return office;
+      }
   	}
 };
  
@@ -282,7 +323,8 @@ int main()
 
   //output bank score and other information 
   cout << "\nBank Score: " << bankScore;
-  cout << "\nEnd of simulation...Goodbye\n";
+  outFile << "\nBank Score: " << bankScore;
+  cout << "\nEnd of simulation.\n Check the BankReport.txt file for the bank report simulation output.\n";
   cout << "\n";
   outFile << "\nEnd of simulation...Goodbye\n";
 }
