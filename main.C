@@ -19,15 +19,35 @@
 using namespace std;
 
 
-class bank
+class Bank
 {
   public:
   	int goodTellers, badTellers;
   	int managers;
+  	double time;
+  	
 
   	bool bankState;
   	bool busy;
-
+  	
+  	
+  	if(time < 0)
+  	{
+  	 cout<<"The bank is closed";
+  	 return FALSE;
+  	}
+  	
+  	else if(time > 288000)
+  	{
+  	 cout<<"The bank is closed";
+  	 return FALSE;
+  	}
+   else
+   {
+    cout<<"The bank is open";
+    return TRUE;
+   }
+   
   	bool isBusy()
     { 
       return busy;
