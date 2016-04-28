@@ -18,6 +18,25 @@
 
 using namespace std;
 
+
+class bank
+{
+  public:
+  	int goodTellers, badTellers;
+  	int managers;
+
+  	bool bankState;
+  	bool busy;
+
+  	bool isBusy()
+    { 
+      return busy;
+    }
+    
+   
+
+};
+
 class Customer
 {
   int serviceTime;
@@ -116,21 +135,11 @@ class customerQueue : public queue<Customer>
   public:
    friend ostream& operator<<(ostream& outStream, const customerQueue& custQueue)
    {
-     copy(custQueue.c.begin(), custQueue.c.end(),
-     ostream_iterator<Customer>(outStream, " "));
+     copy(custQueue.c.begin(), custQueue.c.end(), ostream_iterator<Customer>(outStream, " "));
      return outStream;
    }
 };
 
-class bank
-{
-  public:
-  	int goodTellers, badTellers;
-  	int managers;
-
-  	bool isBusy;
-  	bool bankState; 
-};
  
 int main()
 {
@@ -149,7 +158,7 @@ int main()
   //random number generator
   srand(time(0));
   
-  //account for run time
+  //keeping track of run time
   clock_t ticks = clock();
 
   cout << "Starting Bank Simulation..." << endl;
