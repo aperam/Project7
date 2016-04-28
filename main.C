@@ -16,9 +16,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include "main.h"
-
 using namespace std;
-
 
 class Bank
 {
@@ -74,6 +72,7 @@ class Customer
     public:
       //constructor for customer
       Customer() : serviceTime(0) {}
+      //overloaded constructor for customer with parameter for service time
       Customer(int tm) : serviceTime(tm) {}
       
       //function to get the service time 
@@ -85,7 +84,8 @@ class Customer
     //overloaded operator for formating customer queue
     friend ostream& operator<<(ostream& os, const Customer& c)
     {
-       return os << '[' << c.serviceTime << ']';
+       //returns customer queue in a nicely formatted way
+       return os << ' ' << c.serviceTime << ' ';
     }
 };
  
@@ -204,7 +204,7 @@ class customerQueue : public queue<Customer>
    friend ostream& operator<<(ostream& outStream, const customerQueue& custQueue)
    {
    	 //formats the customer queue and returns the output
-     copy(custQueue.c.begin(), custQueue.c.end(), ostream_iterator<Customer>(outStream, " "));
+     copy(custQueue.c.begin(), custQueue.c.end(), ostream_iterator<Customer>(outStream, ","));
      return outStream;
    }
 };
@@ -241,7 +241,7 @@ class manager
 int main()
 {
   //Output file for the bank report
-  ofstream outFile("bankReport.txt");
+  ofstream outFile("Bank_Report.txt");
 
   //variable to keep track of score
   long bankScore = 0.0;
