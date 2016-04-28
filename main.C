@@ -53,7 +53,7 @@ class Bank
   	  }
   	  else
   	  {
-  	    cout << "\nThe bank is now open\n";
+  	    cout << "\nThe bank is now open for service.\n";
   	    cout << "\n";
   	    open == true;
   	    return open;
@@ -168,6 +168,23 @@ class customerQueue : public queue<Customer>
    }
 };
 
+class manager
+{
+  public:
+  	bool visit = false;
+  	bool office = false;
+
+    Bank startDay;
+
+  	bool run()
+  	{
+      if(startDay.bankState() == true)
+      {
+        office == true;
+        return office;
+      }	
+  	}
+};
  
 int main()
 {
@@ -192,7 +209,7 @@ int main()
   //adds the customers to the teller queue
   tellers.push_back(Teller(customers));
   
-  //random number generator
+  //random number generator for keeping track of clock time
   srand(time(0));
   
   //keeping track of run time
@@ -203,56 +220,67 @@ int main()
   cout << "Starting Bank Simulation..." << endl;
   outFile << "Starting Bank Simulation..." << endl;
 
+  //checks to see if the bank is open or closed for the day
   newDay.bankState();
   
   //Run simulation for at least 5 seconds:
   while(clock() < ticks + 5 * CLOCKS_PER_SEC)
   {
-    //Add a random number of customers to the
-    //queue, with random service times:
+    //for loop to add customers to the queue
     for(int i = 0; i < rand() % 5; i++)
     {	
+      //adding customers to the queue	
       customers.push(Customer(rand() % 15 + 1));
       cout << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
       outFile << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
     }
 
-    //Have the tellers service the queue:
+    //Tellers start to help customers in the queue
     for(tellersIter i = tellers.begin(); i != tellers.end(); i++)
     {
+      //going through customer queue and running the FIFO simulation
       (*i).helpCustomers();
+      //adjust bank score each time customer is served
       bankScore += 10;
     }
 
     cout << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
     outFile << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
 
-    //If line is too long, add another teller:
+    //Checks to see if the customer line is too long and adds a teller, if necessary
     if(customers.size() / tellers.size() > 2)
     {
        cout << "\nLine is too long, adding another teller...\n";
        outFile << "\nLine is too long, adding another teller...\n";
+
+       //adding a teller due to a long customer line
        tellers.push_back(Teller(customers));
+       //adjusting bank score
        bankScore -= 10;
     }  
 
-    //If line is short enough, remove a teller:
+    //checks to see if line is short enough to remove a teller
     if(tellers.size() > 1 && customers.size() / tellers.size() < 2)
     {
+      //iterating throught the tellers to find one that is not busy to be removed
       for(tellersIter i = tellers.begin(); i != tellers.end(); i++)
       {
         if(!(*i).isBusy())
         {
           cout << "\nThe lines are short, so a teller is removed\n";
           outFile << "\nThe lines are short, so a teller is removed\n";
+          //remove the teller that is not currently busy
           tellers.erase(i);
+          //adjust bank score
           bankScore -= 10;
-          //Break the for loop
+          //Break out of the for loop
           break;
         }
       }  
     }
   }
+
+  //output bank score and other information 
   cout << "\nBank Score: " << bankScore;
   cout << "\nEnd of simulation...Goodbye\n";
   cout << "\n";
