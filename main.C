@@ -7,6 +7,15 @@
  April 27, 2016
 */
 
+/**
+ Ryan Morvay - morvayr@email.sc.edu
+ Joseph Bloxham - bloxhamj@email.sc.edu
+ Ian Osea - osea@email.sc.edu
+ Project 7
+ CSCE 240 
+ April 27, 2016
+*/
+
 #include <iostream>
 #include <ctime>
 #include <iterator>
@@ -23,43 +32,38 @@ using namespace std;
 class Bank
 {
   public:
-  	int goodTellers, badTellers;
-  	int managers;
-  	double time;
-  
-  	bool busy;
+  	int goodTellers, badTellers, managers;
+  	double time = 60;
+  	bool busy = true;
   	bool open;
-  	
   	
   	bool bankState()
   	{
-  	 if (time < 0)
-  	{
-  	  cout<<"The bank is closed";
-     open == false;
-     return open;
-  	}
-  	 else if( time > 288000)
-  	 {
-  	  cout<<"The bank is closed";
-  	  open == false;
-  	  return open;
-  	 }
-  	 else
-  	 {
-  	  cout<<"The bank is open";
-  	  open == true;
-  	  return open;
-  	 }
+  	  if (time < 0)
+  	  {
+  	    cout << "\nThe bank is closed\n";
+        open == false;
+        return open;
+  	  }
+  	  else if( time > 28800)
+  	  {
+  	    cout << "\nThe bank is closed\n";
+  	    open == false;
+  	    return open;
+  	  }
+  	  else
+  	  {
+  	    cout << "\nThe bank is now open\n";
+  	    cout << "\n";
+  	    open == true;
+  	    return open;
+  	  }
   	}	
    
   	bool isBusy()
     { 
       return busy;
-    }
-    
-   
-
+    } 
 };
 
 class Customer
@@ -93,12 +97,12 @@ class Teller
   public:
     Teller(queue<Customer>& customerQueue) : customers(customerQueue), remainingTime(0), busy(false) {}
        
-    Teller& operator=(const Teller& rv)
+    Teller& operator=(const Teller& temp)
     {
-      customers = rv.customers;
-      current = rv.current;
-      remainingTime = rv.remainingTime;
-      busy = rv.busy;
+      customers = temp.customers;
+      current = temp.current;
+      remainingTime = temp.remainingTime;
+      busy = temp.busy;
       return *this;
     }
 
@@ -137,7 +141,6 @@ class Teller
           busy = true;
           helpCustomers(true); // Recurse
         }
-        
         return;
       }
 
@@ -168,9 +171,15 @@ class customerQueue : public queue<Customer>
  
 int main()
 {
-  //
+  //Output file for the bank report
   ofstream outFile("bankReport.txt");
+
+  //variable to keep track of score
+  long bankScore = 0.0;
  
+  //creates new bank object
+  Bank newDay;
+
   //create new customers object	
   customerQueue customers;
   
@@ -193,6 +202,8 @@ int main()
 
   cout << "Starting Bank Simulation..." << endl;
   outFile << "Starting Bank Simulation..." << endl;
+
+  newDay.bankState();
   
   //Run simulation for at least 5 seconds:
   while(clock() < ticks + 5 * CLOCKS_PER_SEC)
@@ -202,25 +213,27 @@ int main()
     for(int i = 0; i < rand() % 5; i++)
     {	
       customers.push(Customer(rand() % 15 + 1));
-      cout << "Teller: " << tellers.size() << " Customers: " << customers << endl;
-      outFile << "Teller: " << tellers.size() << " Customers: " << customers << endl;
+      cout << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
+      outFile << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
     }
 
     //Have the tellers service the queue:
     for(tellersIter i = tellers.begin(); i != tellers.end(); i++)
     {
       (*i).helpCustomers();
+      bankScore += 10;
     }
 
-    cout << "Teller: " << tellers.size() << " Customers: " << customers << endl;
-    outFile << "Teller: " << tellers.size() << " Customers: " << customers << endl;
+    cout << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
+    outFile << "\nNumber of tellers: " << tellers.size() << " \nServing customers: " << customers << endl;
 
     //If line is too long, add another teller:
     if(customers.size() / tellers.size() > 2)
     {
-       cout << "Line is too long, adding another teller...\n";
-       outFile << "Line is too long, adding another teller...\n";
+       cout << "\nLine is too long, adding another teller...\n";
+       outFile << "\nLine is too long, adding another teller...\n";
        tellers.push_back(Teller(customers));
+       bankScore -= 10;
     }  
 
     //If line is short enough, remove a teller:
@@ -230,17 +243,18 @@ int main()
       {
         if(!(*i).isBusy())
         {
-          cout << "The lines are short, so a teller is removed\n";
-          outFile << "The lines are short, so a teller is removed\n";
+          cout << "\nThe lines are short, so a teller is removed\n";
+          outFile << "\nThe lines are short, so a teller is removed\n";
           tellers.erase(i);
+          bankScore -= 10;
           //Break the for loop
           break;
         }
       }  
     }
   }
+  cout << "\nBank Score: " << bankScore;
   cout << "\nEnd of simulation...Goodbye\n";
+  cout << "\n";
   outFile << "\nEnd of simulation...Goodbye\n";
-}  
-
-
+}
